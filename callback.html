@@ -1,13 +1,49 @@
 <!DOCTYPE html>
 <html>
-  <head><title>Callback</title></head>
+  <head>
+    <title>YouTube Channel Info</title>
+  </head>
   <body>
-    <h2>Authorization Successful</h2>
+    <h2>Channel Information</h2>
+    <div id="channel-data">
+      <p>Loading channel data...</p>
+    </div>
+
     <script>
+      // Получаем access_token из URL
       const params = new URLSearchParams(window.location.hash.substring(1));
       const token = params.get('access_token');
-      document.body.innerHTML += `<p><strong>Access Token:</strong> ${token}</p>`;
-      console.log("Access Token:", token);
+
+      if (!token) {
+        document.getElementById('channel-data').innerHTML = '<p>Error: No access token found.</p>';
+      } else {
+        fetch('https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&mine=true', {
+          headers: {
+            Authorization: 'Bearer ' + token
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.items && data.items.length > 0) {
+            const channel = data.items[0];
+            const infoHTML = `
+              <p><strong>Channel Name:</strong> ${channel.snippet.title}</p>
+              <p><strong>Channel ID:</strong> ${channel.id}</p>
+              <p><strong>Subscribers:</strong> ${channel.statistics.subscriberCount}</p>
+              <p><strong>Videos:</strong> ${channel.statistics.videoCount}</p>
+              <p><strong>Views:</strong> ${channel.statistics.viewCount}</p>
+            `;
+            document.getElementById('channel-data').innerHTML = infoHTML;
+          } else {
+            document.getElementById('channel-data').innerHTML = '<p>No channel data found.</p>';
+          }
+        })
+        .catch(error => {
+          console.error('Fetch error:', error);
+          document.getElementById('channel-data').innerHTML = '<p>API request failed.</p>';
+        });
+      }
     </script>
   </body>
 </html>
+
