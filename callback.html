@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html>
+  <head><title>Callback</title></head>
   <body>
-    <h3>Вы авторизованы.</h3>
+    <h2>Authorization Successful</h2>
     <script>
       const params = new URLSearchParams(window.location.hash.substring(1));
       const token = params.get('access_token');
-      document.body.innerHTML += `<p>Ваш токен доступа: ${token}</p>`;
+      document.body.innerHTML += `<p><strong>Access Token:</strong> ${token}</p>`;
+      console.log("Access Token:", token);
     </script>
   </body>
 </html>
